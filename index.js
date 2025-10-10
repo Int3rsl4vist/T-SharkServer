@@ -9,7 +9,7 @@ import { supabase } from './supabaseClient.js';
 import { requireAuth } from './authMiddleware.js';
 const upload = multer();
 const app = express();
-cconst PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`✅ Server running on port ${PORT}`);
