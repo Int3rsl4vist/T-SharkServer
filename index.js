@@ -9,11 +9,12 @@ import { supabase } from './supabaseClient.js';
 import { requireAuth } from './authMiddleware.js';
 const upload = multer();
 const app = express();
-const PORT = process.env.PORT || 8080;
+cconst PORT = process.env.PORT || 8080;
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`✅ Server running on port ${PORT}`);
 });
+
 /*const supabase = createClient(process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY,
   {auth: {persistSession: false}}
@@ -242,6 +243,3 @@ app.get('/api/order', requireAuth,async (req, res) => {
   }
 })
 
-app.listen(PORT, () => {
-  console.log(`Server běží na http://localhost:${PORT}`)
-})
