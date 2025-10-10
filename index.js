@@ -17,7 +17,11 @@ const PORT = process.env.PORT || 3000;
 )*/
 
 app.use(express.json())
-app.use(cors()); //NEBEZPECNY, JEN NA TESTOVANI------------------------------------
+app.use(cors({
+  origin: '*', // ⚠️ jen pro testování, pak nahraď URL své Flutter appky
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minuta
