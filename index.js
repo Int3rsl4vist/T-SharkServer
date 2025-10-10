@@ -22,7 +22,7 @@ app.listen(PORT, "0.0.0.0", () => {
 
 app.use(express.json())
 app.use(cors({
-  origin: 'localhost:8080', // ⚠️ jen pro testování, pak nahraď URL své Flutter appky
+  origin: '0.0.0.0', // ⚠️ jen pro testování, pak nahraď URL své Flutter appky
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
