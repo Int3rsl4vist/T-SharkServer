@@ -118,7 +118,25 @@ app.post('/api/upload_image', upload.single('file'), async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+app.get('/api/get_motives', async (req, res) => {
+  try {
+    // Načteme volitelný limit z query parametru, default 10
+    const limit = parseInt(req.query.limit) || 10;
 
+    // Volání Supabase RPC funkce
+    const { data, error } = await supabaseAdmin.rpc('get_motives', { limit_count: limit });
+
+    if (error) {
+      console.error('Supabase RPC error:', error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.status(200).json({ message: data });
+  } catch (err) {
+    console.error('Server error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 app.get('/api/get_image/:id', async (req, res) => {
   try {
     const imageId = req.params.id;
@@ -154,7 +172,6 @@ app.get('/api/get_image/:id', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-
 app.get('/api/image/file/:id', async (req, res) => {
   try {
     const imageId = req.params.id;
