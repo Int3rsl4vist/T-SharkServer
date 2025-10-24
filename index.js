@@ -9,6 +9,7 @@ import { supabase, supabaseAdmin } from './supabaseClient.js';
 import { requireAuth } from './authMiddleware.js';
 const upload = multer();
 const app = express();
+app.set('trust proxy', true);
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, "0.0.0.0", () => {
