@@ -35,7 +35,7 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 app.use(limiter);
-
+app.get('/test', (req, res) => res.send('OK'));
 app.get('/', async (req, res) => {
   console.log("je tu");
     res.json({ message: 'Server is running'})
