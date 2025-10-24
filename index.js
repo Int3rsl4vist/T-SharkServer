@@ -5,7 +5,7 @@ import rateLimit from 'express-rate-limit';
 import { v4 as uuidv4 } from 'uuid';
 import multer from 'multer';
 
-import { supabase } from './supabaseClient.js';
+import { supabase, supabaseAdmin } from './supabaseClient.js';
 import { requireAuth } from './authMiddleware.js';
 const upload = multer();
 const app = express();
