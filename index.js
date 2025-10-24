@@ -120,14 +120,20 @@ app.post('/api/upload_image', upload.single('file'), async (req, res) => {
 });
 app.get('/api/get_motives', async (req, res) => {
   try {
-    const { data, error } = await supabaseAdmin
-      .rpc('get_motives', { limit_count: 10 });
+    // limit je volitelný, default 10
+    const limit = parseInt(req.query.limit) || 10;
 
-    if (error) return res.status(500).json({ error: error.message });
+    // volání Supabase RPC funkce get_motives (vrací JSONB)
+    const { data, error } = await supabaseAdmin.rpc('get_motives', { limit_count: limit });
 
-    res.status(200).json({ motives: data });
+    if (error) {
+      console.error('Supabase RPC error:', error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.status(200).json({ motives: data }); // rovnou posíláme klientovi
   } catch (err) {
-    console.error(err);
+    console.error('Server error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
