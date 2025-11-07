@@ -212,6 +212,38 @@ app.get('/api/image/file/:id', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+app.post('/api/orders', requireAuth, async (req, res) => {
+  // req.body → data z Flutteru
+  console.log(req.body);
+
+  // destrukturalizace proměnných z těla requestu podle šablony
+  const { jmeno, prijmeni, email, adresa, products } = req.body;
+
+  // id přihlášeného uživatele
+  const userID = req.user.id;
+
+  try {
+    const { data, error } = await supabase.rpc('create_orderss', {
+      p_user_id: userID,
+      p_jmeno: jmeno,
+      p_prijmeni: prijmeni,
+      p_email: email,
+      p_adresa: adresa,    // JSON objekt
+      p_products: products // JSON array/object
+    });
+
+    if (error) {
+      console.error(error);
+      return res.status(400).json({ error: error.message });
+    }
+
+    console.log(data);
+    res.json({ message: 'Funkce create_order zavolána', data });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 app.post('/api/order', requireAuth,async (req, res) => {
   // req.body → data z POST requestu
   console.log(req.body)
