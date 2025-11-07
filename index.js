@@ -20,7 +20,6 @@ app.use((req, res, next) => {
   console.log(`Request: ${req.method} ${req.url}`);
   next();
 });
-
 /*
 const supabase = createClient(process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY,
@@ -52,7 +51,7 @@ app.get('/ahoj', (req, res) => {
   console.log("test nice");
   res.send("Ahoj!");
 });
-/*
+
 app.get('/api/test-token', async (req, res) => {
   const authHeader = req.headers.authorization;
 
@@ -268,5 +267,3 @@ app.get('/api/order', requireAuth,async (req, res) => {
     res.status(500).json({ error: 'Server error' })
   }
 })
-*/
-
