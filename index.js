@@ -52,7 +52,8 @@ app.get('/ahoj', (req, res) => {
   console.log("test nice");
   res.send("Ahoj!");
 });
-/*app.get('/api/test-token', async (req, res) => {
+/*
+app.get('/api/test-token', async (req, res) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
