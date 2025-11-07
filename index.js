@@ -32,7 +32,6 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.options('*', cors());
 
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minuta
