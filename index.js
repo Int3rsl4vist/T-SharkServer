@@ -212,6 +212,42 @@ app.get('/api/image/file/:id', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+app.post('/api/users', async (req, res) => {
+  try {
+    // destrukturalizace z request body
+    const {
+      name,
+      surname,
+      username,
+      bio,
+      password_hash,
+      born_date,
+      isTemporary
+    } = req.body;
+
+    // zavolání RPC funkce create_user
+    const { data, error } = await supabase.rpc('create_user', {
+      p_name: name,
+      p_surname: surname,
+      p_username: username,
+      p_bio: bio,
+      p_password_hash: password_hash,
+      p_born_date: born_date,
+      p_isTemporary: isTemporary
+    });
+
+    if (error) {
+      console.error(error);
+      return res.status(400).json({ error: error.message });
+    }
+
+    res.status(201).json({ user: data });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 app.post('/api/orders', requireAuth, async (req, res) => {
   // req.body → data z Flutteru
   console.log(req.body);
