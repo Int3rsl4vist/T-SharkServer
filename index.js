@@ -21,7 +21,8 @@ app.use((req, res, next) => {
   next();
 });
 
-/*const supabase = createClient(process.env.SUPABASE_URL,
+/*
+const supabase = createClient(process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY,
   {auth: {persistSession: false}}
 )*/
@@ -265,5 +266,6 @@ app.get('/api/order', requireAuth,async (req, res) => {
     console.error(err)
     res.status(500).json({ error: 'Server error' })
   }
-})*/
+})
+*/
 
