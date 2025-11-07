@@ -248,33 +248,80 @@ app.post('/api/users', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-app.post('/api/orders', requireAuth, async (req, res) => {
-  // req.body → data z Flutteru
-  console.log(req.body);
-
-  // destrukturalizace proměnných z těla requestu podle šablony
-  const { jmeno, prijmeni, email, adresa, products } = req.body;
-
-  // id přihlášeného uživatele
-  const userID = req.user.id;
-
+app.post('/api/orders', async (req, res) => {
   try {
-    const { data, error } = await supabase.rpc('create_orderss', {
+    const { jmeno, prijmeni, email, adresa, products } = req.body;
+
+    // 1️⃣ Vytvoření dočasného uživatele
+    const { data: newUser, error: userError } = await supabase.rpc('create_user', {
+      p_name: jmeno,
+      p_surname: prijmeni,
+      p_username: email,   
+      p_bio: null,
+      p_password_hash: null,
+      p_born_date: null,
+      p_isTemporary: true
+    });
+
+    if (userError) {
+      console.error(userError);
+      return res.status(400).json({ error: userError.message });
+    }
+
+    const userID = newUser.id;
+
+    // 2️⃣ Vymazání starých dočasných uživatelů
+    const { error: deleteError } = await supabase.rpc('delete_expired_users');
+    if (deleteError) console.warn('Chyba při mazání starých uživatelů:', deleteError.message);
+    // 3️⃣ Vytvoření objednávky
+    const { data: orderData, error: orderError } = await supabase.rpc('create_orderss', {
       p_user_id: userID,
       p_jmeno: jmeno,
       p_prijmeni: prijmeni,
       p_email: email,
       p_adresa: adresa,    // JSON objekt
-      p_products: products // JSON array/object
+      p_products: products // JSON array objektů
     });
 
-    if (error) {
-      console.error(error);
-      return res.status(400).json({ error: error.message });
+    if (orderError) {
+      console.error(orderError);
+      return res.status(400).json({ error: orderError.message });
     }
 
-    console.log(data);
-    res.json({ message: 'Funkce create_order zavolána', data });
+    const orderId = orderData.order_id; // musíme mít order_id
+
+    // 4️⃣ Vložení produktů do tabulky product (hromadně)
+    const productInserts = products.map(prod => {
+      const { quantity, sex, size, price, motive } = prod;
+      const { name: motive_name, starting_price, image_url } = motive;
+      return {
+        order_id: orderId,
+        motive_name,
+        motive_starting_price: starting_price,
+        motive_image_url: image_url,
+        quantity,
+        sex,
+        size,
+        price
+      };
+    });
+
+    const { data: prodData, error: prodError } = await supabase
+      .from('product')
+      .insert(productInserts);
+
+    if (prodError) {
+      console.error(prodError);
+      return res.status(400).json({ error: prodError.message });
+    }
+
+    res.status(201).json({
+      message: 'Uživatel, objednávka a produkty vytvořeny',
+      user: newUser,
+      order: orderData,
+      products: prodData
+    });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
