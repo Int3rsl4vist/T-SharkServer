@@ -51,7 +51,7 @@ app.get('/', async (req, res) => {
 app.get('ahoj', async (req,res) => {
   console.log("test nice");
 });
-app.get('/api/test-token', async (req, res) => {
+/*app.get('/api/test-token', async (req, res) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -265,5 +265,5 @@ app.get('/api/order', requireAuth,async (req, res) => {
     console.error(err)
     res.status(500).json({ error: 'Server error' })
   }
-})
+})*/
 
