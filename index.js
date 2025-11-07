@@ -40,7 +40,7 @@ const limiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
-app.use(limiter);
+//app.use(limiter);
 app.get('/test', (req, res) => res.send('OK'));
 app.get('/', async (req, res) => {
   console.log("je tu");
@@ -48,7 +48,7 @@ app.get('/', async (req, res) => {
     
 })
 
-app.get('ahoj', async (req,res) => {
+app.get('/ahoj', async (req,res) => {
   console.log("test nice");
 });
 /*app.get('/api/test-token', async (req, res) => {
