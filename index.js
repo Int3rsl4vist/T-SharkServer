@@ -47,8 +47,9 @@ app.get('/', async (req, res) => {
     
 })
 
-app.get('/ahoj', async (req,res) => {
+app.get('/ahoj', (req, res) => {
   console.log("test nice");
+  res.send("Ahoj!");
 });
 /*app.get('/api/test-token', async (req, res) => {
   const authHeader = req.headers.authorization;
