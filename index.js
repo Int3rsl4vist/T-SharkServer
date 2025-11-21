@@ -261,36 +261,57 @@ app.post('/api/orders', async (req, res) => {
   try {
     const { jmeno, prijmeni, email, adresa, products } = req.body;
 
-    // 1️⃣ Vytvoření dočasného uživatele
-    const { data: newUser, error: userError } = await supabase.rpc('create_user', {
-      p_name: jmeno,
-      p_surname: prijmeni,
-      p_username: email,   
-      p_bio: null,
-      p_password_hash: null,
-      p_born_date: null,
-      p_istemporary: true
-    });
+    let userID;
 
-    if (userError) {
-      console.error(userError);
-      return res.status(400).json({ error: userError.message });
+    // 1️⃣ Zkusit najít existujícího uživatele podle emailu
+    const { data: existingUser, error: findError } = await supabase
+      .from('users')
+      .select('id, istemporary')
+      .eq('username', email)
+      .maybeSingle();
+
+    if (findError) {
+      console.error(findError);
+      return res.status(500).json({ error: 'Chyba při hledání uživatele' });
     }
 
-    const userID = newUser?.id; // správně
-    console.log('newUser:', newUser);
-    console.log('userID:', userID, 'type:', typeof userID);
-    // 2️⃣ Vymazání starých dočasných uživatelů
-    const { error: deleteError } = await supabase.rpc('delete_expired_users');
-    if (deleteError) console.warn('Chyba při mazání starých uživatelů:', deleteError.message);
-    // 3️⃣ Vytvoření objednávky
+    if (existingUser) {
+      // 2️⃣ Pokud existuje → použijeme ho
+      console.log("Používám existujícího usera");
+      userID = existingUser.id;
+    } else {
+      // 3️⃣ Pokud neexistuje → vytvoříme dočasného
+      console.log("Vytvářím nového temporary usera");
+
+      const { data: newUser, error: userError } = await supabase.rpc('create_user', {
+        p_name: jmeno,
+        p_surname: prijmeni,
+        p_username: email,
+        p_bio: null,
+        p_password_hash: null,
+        p_born_date: null,
+        p_istemporary: true
+      });
+
+      if (userError) {
+        console.error(userError);
+        return res.status(400).json({ error: userError.message });
+      }
+
+      userID = newUser.id;
+    }
+
+    // 4️⃣ Mazání starých temporary users
+    await supabase.rpc('delete_expired_users');
+
+    // 5️⃣ Vytvoření objednávky
     const { data: orderData, error: orderError } = await supabase.rpc('create_orderss', {
       p_user_id: userID,
       p_jmeno: jmeno,
       p_prijmeni: prijmeni,
       p_email: email,
-      p_adresa: adresa,    // JSON objekt
-      p_products: products // JSON array objektů
+      p_adresa: adresa,
+      p_products: products
     });
 
     if (orderError) {
@@ -298,12 +319,13 @@ app.post('/api/orders', async (req, res) => {
       return res.status(400).json({ error: orderError.message });
     }
 
-    const orderId = orderData.order_id; // musíme mít order_id
+    const orderId = orderData.order_id;
 
-    // 4️⃣ Vložení produktů do tabulky product (hromadně)
+    // 6️⃣ Vložení produktů
     const productInserts = products.map(prod => {
       const { quantity, sex, size, price, motive } = prod;
       const { name: motive_name, starting_price, image_url } = motive;
+
       return {
         order_id: orderId,
         motive_name,
@@ -327,7 +349,7 @@ app.post('/api/orders', async (req, res) => {
 
     res.status(201).json({
       message: 'Uživatel, objednávka a produkty vytvořeny',
-      user: newUser,
+      userID,
       order: orderData,
       products: prodData
     });
