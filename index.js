@@ -278,7 +278,8 @@ app.post('/api/orders', async (req, res) => {
     }
 
     const userID = newUser?.id; // správně
-
+    console.log('newUser:', newUser);
+    console.log('userID:', userID, 'type:', typeof userID);
     // 2️⃣ Vymazání starých dočasných uživatelů
     const { error: deleteError } = await supabase.rpc('delete_expired_users');
     if (deleteError) console.warn('Chyba při mazání starých uživatelů:', deleteError.message);
