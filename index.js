@@ -222,14 +222,14 @@ app.post('/api/users', async (req, res) => {
       bio,
       password_hash,
       born_date,
-      isTemporary
+      istemporary
     } = req.body;
 
     // zavolání RPC funkce create_user
     const { data, error } = await supabase.rpc('create_user', {
       p_bio: bio,
       p_born_date: born_date,
-      p_isTemporary: isTemporary,
+      p_istemporary: istemporary,
       p_name: name,
       p_password_hash: password_hash,
       p_surname: surname,
@@ -260,7 +260,7 @@ app.post('/api/orders', async (req, res) => {
       p_bio: null,
       p_password_hash: null,
       p_born_date: null,
-      p_isTemporary: true
+      p_istemporary: true
     });
 
     if (userError) {
