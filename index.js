@@ -277,7 +277,7 @@ app.post('/api/orders', async (req, res) => {
       return res.status(400).json({ error: userError.message });
     }
 
-    const userID = newUser.id;
+    const userID = newUser?.id; // správně
 
     // 2️⃣ Vymazání starých dočasných uživatelů
     const { error: deleteError } = await supabase.rpc('delete_expired_users');
