@@ -224,7 +224,7 @@ app.post('/api/users', async (req, res) => {
       born_date,
       istemporary
     } = req.body;
-
+    const finalUsername = getFinalUsername(istemporary, username);
     // zavolání RPC funkce create_user
     const { data, error } = await supabase.rpc('create_user', {
       p_bio: bio,
@@ -233,7 +233,7 @@ app.post('/api/users', async (req, res) => {
       p_name: name,
       p_password_hash: password_hash,
       p_surname: surname,
-      p_username: username
+      p_username: finalUsername
     });
 
     if (error) {
@@ -248,6 +248,15 @@ app.post('/api/users', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+function getFinalUsername(istemporary, username) {
+  if (!istemporary) {
+    return username; 
+  }
+
+  const timestamp = Date.now(); 
+  const randomHash = Math.random().toString(36).substring(2, 12);
+  return tmp_${timestamp}_${randomHash};
+};
 app.post('/api/orders', async (req, res) => {
   try {
     const { jmeno, prijmeni, email, adresa, products } = req.body;
