@@ -255,7 +255,7 @@ function getFinalUsername(istemporary, username) {
 
   const timestamp = Date.now(); 
   const randomHash = Math.random().toString(36).substring(2, 12);
-  return tmp_${timestamp}_${randomHash};
+  return `tmp_${timestamp}_${randomHash}`;
 };
 app.post('/api/orders', async (req, res) => {
   try {
